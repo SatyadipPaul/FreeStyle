@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Grid</title>
+    <style>
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            background-color: white;
+            z-index: 1;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        th {
+            font-weight: 600;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            th, td {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
+
+        /* Overlay Popup Styles */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: all 0.3s ease;
+            width: 400px;
+        }
+
+        .overlay.active {
+            display: flex;
+            align-items: center;
+        }
+
+        .overlay.active .popup {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .popup.second-popup {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translate(0, -50%);
+            width: 300px;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .popup.showing-second  { /* Apply styles to the first popup */
+            transform: translateX(-350px);
+        }
+
+        .popup.showing-second .second-popup { /* Make the second popup visible when the first popup has 'showing-second' */
+            opacity: 1;
+            transform: translate(0, -50%);
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            color: #666;
+        }
+
+        .popup h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .popup table {
+            width: auto;
+            margin-top: 20px;
+        }
+
+        .popup th, .popup td {
+            padding: 10px;
+        }
+
+        .clickable-reviews {
+            text-decoration: underline;
+            cursor: pointer;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <table>
+        <thead>
+        <tr>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Details</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Rows will be added here by JavaScript -->
+        </tbody>
+    </table>
+</div>
+
+<div class="overlay" id="productPopup">
+    <div class="popup">
+        <span class="close-button" onclick="closePopups()">×</span>
+        <h2 id="productName">Product Name</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Rating</th>
+                <th>Reviews</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Rating and Reviews will be added here -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="popup second-popup" id="reviewsPopup">
+        <span class="close-button" onclick="closePopups()">×</span>
+        <h2>Review Breakdown</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Rating</th>
+                <th>Number of People</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Rating breakdown will be added here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const products = ["Laptop", "Smartphone", "Smartwatch", "Earbuds", "Tablet", "Monitor", "Keyboard", "Mouse", "Webcam", "Headphones"];
+    const statuses = ["Available", "Out of Stock", "Pre-order"];
+
+    function generateRandomData() {
+        const productName = products[Math.floor(Math.random() * products.length)];
+        const category = productName.toLowerCase();
+        const price = (Math.random() * 1000).toFixed(2);
+        const status = statuses[Math.floor(Math.random() * statuses.length)];
+        const details = "Lorem ipsum dolor sit amet";
+
+        return { productName, category, price, status, details };
+    }
+
+    const tbody = document.querySelector("tbody");
+    const overlay = document.getElementById("productPopup");
+    const productNameHeader = document.getElementById("productName");
+    const popupBody = overlay.querySelector(".popup tbody");
+    const reviewsPopup = document.getElementById("reviewsPopup");
+    const reviewsPopupBody = reviewsPopup.querySelector("tbody");
+
+    function openPopup(productName) {
+        productNameHeader.textContent = productName;
+
+        const ratingStars = '★'.repeat(Math.floor(Math.random() * 5) + 1) + '☆'.repeat(5 - Math.floor(Math.random() * 5) + 1);
+        const reviewCount = Math.floor(Math.random() * 1000) + 1;
+
+        popupBody.innerHTML = `
+            <tr>
+                <td>${ratingStars}</td>
+                <td>${reviewCount} reviews</td>
+            </tr>
+        `;
+
+        overlay.classList.add("active");
+    }
+
+    function closePopups() {
+        overlay.classList.remove("active");
+        overlay.querySelector(".popup").classList.remove("showing-second");
+    }
+
+    function openReviewsPopup(totalReviews) {
+        reviewsPopupBody.innerHTML = '';
+
+        for (let i = 1; i <= 5; i++) {
+            const ratingCount = Math.round(Math.random() * totalReviews);
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${'★'.repeat(i) + '☆'.repeat(5 - i)}</td>
+                <td>${ratingCount}</td>
+            `;
+            reviewsPopupBody.appendChild(row);
+            totalReviews -= ratingCount;
+        }
+
+        if (totalReviews > 0) {
+            const lastRow = reviewsPopupBody.lastElementChild;
+            lastRow.querySelector("td:last-child").textContent = parseInt(lastRow.querySelector("td:last-child").textContent) + totalReviews;
+        }
+
+        overlay.querySelector(".popup").classList.add("showing-second");
+    }
+
+    for (let i = 0; i < 100; i++) {
+        const data = generateRandomData();
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td onclick="openPopup('${data.productName}')">${data.productName}</td>
+            <td>${data.category}</td>
+            <td>$${data.price}</td>
+            <td>${data.status}</td>
+            <td>${data.details}</td>
+        `;
+        tbody.appendChild(row);
+    }
+</script>
+
+</body>
+</html>
