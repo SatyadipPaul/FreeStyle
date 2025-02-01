@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Old Regime Tax Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --accent-color: #10b981;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-color: #1e293b;
+      --border-color: #e2e8f0;
+      --shadow-color: rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.5;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border-radius: 1rem;
+      box-shadow: 0 10px 30px var(--shadow-color);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
+      color: white;
+      padding: 2.5rem 2rem;
+      border-radius: 0 0 2rem 2rem;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    .section-card {
+      padding: 1.5rem 2rem;
+      margin: 0 2rem 2rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .section-card h3 {
+      font-size: 1.1rem;
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .form-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      align-items: center;
+    }
+
+    .form-group label {
+      flex: 1 1 250px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: #475569;
+    }
+
+    .input-group {
+      flex: 2 1 300px;
+      position: relative;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      background: white;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    fieldset {
+      border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    legend {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-color);
+      padding: 0 0.5rem;
+    }
+
+    .radio-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 0.5rem 0;
+    }
+
+    .radio-group label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    input[type="radio"],
+    input[type="checkbox"] {
+      width: 1.1em;
+      height: 1.1em;
+      accent-color: var(--primary-color);
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0.75rem 0;
+    }
+
+    button#calculateBtn {
+      display: block;
+      width: 90%;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s ease, background 0.2s ease;
+    }
+
+    button#calculateBtn:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    .result-section {
+      padding: 2rem;
+      margin: 0 2rem 2rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 0.75rem;
+    }
+
+    .result-section h4 {
+      font-size: 1.1rem;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+
+    .result-value {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--accent-color);
+      margin-left: 0.5rem;
+    }
+
+    pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      background: #f8fafc;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border-color);
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .ascii-section {
+      margin: 1.5rem 0;
+    }
+
+    .ascii-section h4 {
+      font-size: 1rem;
+      color: #64748b;
+      margin-bottom: 0.75rem;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        margin: 0.5rem;
+      }
+
+      .header {
+        padding: 2rem 1rem;
+        border-radius: 0.75rem;
+      }
+
+      .section-card {
+        margin: 0 1rem 1.5rem;
+        padding: 1.25rem;
+      }
+
+      .form-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .input-group {
+        width: 100%;
+      }
+
+      button#calculateBtn {
+        width: 100%;
+        margin: 1.5rem auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Old Regime Tax Calculator</h1>
+      <p>Calculate your tax liability under the old tax regime with standard deduction and other exemptions</p>
+    </div>
+
+    <form id="taxForm">
+      <!-- Income Details Card -->
+      <div class="section-card">
+        <h3>Income Details</h3>
+        <div class="form-group">
+          <label for="basicSalary">Basic Salary (Annual ₹)</label>
+          <div class="input-group">
+            <input type="text" id="basicSalary" class="numeric-input" pattern="^[0-9,.]+$" inputmode="numeric" value="11,77,500.00" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="hra">Housing Rental Allowance (Annual ₹)</label>
+          <div class="input-group">
+            <input type="text" id="hra" class="numeric-input" pattern="^[0-9,.]+$" inputmode="numeric" value="5,88,750.00" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="specialAllowance">Special/Other Allowances (Annual ₹)</label>
+          <div class="input-group">
+            <input type="text" id="specialAllowance" class="numeric-input" pattern="^[0-9,.]+$" inputmode="numeric" value="19,79,450.00" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="lta">Leave Travel Allowance (Annual ₹)</label>
+          <div class="input-group">
+            <input type="text" id="lta" class="numeric-input" pattern="^[0-9,.]+$" inputmode="numeric" value="50,000.00" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="bonus">Additional Bonus/Payout (Annual ₹)</label>
+          <div class="input-group">
+            <input type="text" id="bonus" class="numeric-input" pattern="^[0-9,.]+$" inputmode="numeric" value="6,00,000.00" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="annualPF">Annual Provident Fund (₹)</label>
+          <div class="input-group">
+            <input type="text" id="annualPF" class="numeric-input" pattern="^[0-9,.]+$" inputmode="numeric" value="1,41,300.00" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="actualRent">Actual Rent Paid (Monthly ₹)</label>
+          <div class="input-group">
+            <input type="text" id="actualRent" class="numeric-input" pattern="^[0-9,.]+$" inputmode="numeric" value="45,000.00" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <fieldset>
+            <legend>City Type for HRA Calculation</legend>
+            <div class="radio-group">
+              <input type="radio" id="metro" name="cityType" value="metro" checked />
+              <label for="metro">Metro (50% of Basic Salary)</label>
+            </div>
+            <div class="radio-group">
+              <input type="radio" id="nonmetro" name="cityType" value="nonmetro" />
+              <label for="nonmetro">Non-Metro (40% of Basic Salary)</label>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+
+      <!-- Tax Deductions Card -->
+      <div class="section-card">
+        <h3>Tax Deductions</h3>
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input type="checkbox" id="claimHRA" checked />
+            <label for="claimHRA">Claim HRA Exemption (Compute as per rules)</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input type="checkbox" id="claim80C" checked />
+            <label for="claim80C">Claim Maximum Under Section 80C (₹1,50,000)</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input type="checkbox" id="claim80D" checked />
+            <label for="claim80D">Claim Maximum Under Section 80D (₹25,000)</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="npsContribution">NPS Contribution Under Section 80CCD (₹)</label>
+          <div class="input-group">
+            <input type="text" id="npsContribution" class="numeric-input" pattern="^[0-9,.]+$" inputmode="numeric" value="50,000.00" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="homeLoanInterest">Home Loan Interest Deduction (Sec 24(b), up to ₹2,00,000)</label>
+          <div class="input-group">
+            <input type="text" id="homeLoanInterest" class="numeric-input" pattern="^[0-9,.]+$" inputmode="numeric" value="2,00,000.00" />
+          </div>
+        </div>
+      </div>
+
+      <button type="button" id="calculateBtn">Calculate Tax Liability</button>
+    </form>
+
+    <!-- Result Display -->
+    <div id="resultArea" class="result-section" style="display:none;">
+      <h4>Salary Details</h4>
+      <div class="result-group">
+        <div class="result-row">
+          <span>Monthly Take Home Salary:</span>
+          <span class="result-value" id="takeHomeSalary"></span>
+        </div>
+        <div class="result-row">
+          <span>Total Tax Liability (Annual):</span>
+          <span class="result-value" id="taxLiability"></span>
+        </div>
+      </div>
+
+      <div id="breakdownArea" class="breakdown" style="display:none;">
+        <div class="side-by-side">
+          <div class="ascii-section">
+            <h4>Gross Income Calculation</h4>
+            <pre id="tableGross"></pre>
+          </div>
+          <div class="ascii-section">
+            <h4>HRA Calculation</h4>
+            <pre id="tableHRA"></pre>
+          </div>
+        </div>
+
+        <div class="ascii-section">
+          <h4>Deductions &amp; Taxable Income</h4>
+          <pre id="tableDeduction"></pre>
+        </div>
+
+        <div class="ascii-section">
+          <h4>Slab-wise Tax Calculation</h4>
+          <pre id="tableSlab"></pre>
+        </div>
+
+        <div class="ascii-section">
+          <h4>Tax Summary</h4>
+          <pre id="tableSummary"></pre>
+        </div>
+
+        <div class="ascii-section">
+          <h4>Monthly Take Home Breakdown</h4>
+          <pre id="tableMonthly"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Original JavaScript remains unchanged.
+    function buildAsciiTable(title, rows) {
+      const header1 = "Description";
+      const header2 = "Value";
+      let col1Width = header1.length;
+      let col2Width = header2.length;
+      rows.forEach(function(row) {
+        if (row[0].length > col1Width) col1Width = row[0].length;
+        if (row[1].length > col2Width) col2Width = row[1].length;
+      });
+      const borderLine = "+" + "-".repeat(col1Width + 2) + "+" + "-".repeat(col2Width + 2) + "+\n";
+      const totalWidth = col1Width + col2Width + 5;
+      const titleLine = "|" + title.padStart((totalWidth + title.length) / 2).padEnd(totalWidth) + "|\n";
+      const headerRow = "| " + header1.padEnd(col1Width) + " | " + header2.padEnd(col2Width) + " |\n";      
+      let table = borderLine + titleLine + borderLine + headerRow + borderLine;
+      rows.forEach(function(row) {
+        table += "| " + row[0].padEnd(col1Width) + " | " + row[1].padEnd(col2Width) + " |\n";
+      });
+      table += borderLine;
+      return table;
+    }
+
+    function formatNumber(num) {
+      return num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function computeTax(taxableIncome) {
+      let tax = 0;
+      let slabDetails = [];
+      if (taxableIncome > 250000) {
+        let slabIncome = Math.min(taxableIncome, 500000) - 250000;
+        let taxForSlab = 0.05 * slabIncome;
+        slabDetails.push({
+          range: '₹2,50,001 - ₹5,00,000',
+          income: slabIncome,
+          rate: '5%',
+          tax: taxForSlab
+        });
+        tax += taxForSlab;
+      }
+      if (taxableIncome > 500000) {
+        let slabIncome = Math.min(taxableIncome, 1000000) - 500000;
+        let taxForSlab = 0.20 * slabIncome;
+        slabDetails.push({
+          range: '₹5,00,001 - ₹10,00,000',
+          income: slabIncome,
+          rate: '20%',
+          tax: taxForSlab
+        });
+        tax += taxForSlab;
+      }
+      if (taxableIncome > 1000000) {
+        let slabIncome = taxableIncome - 1000000;
+        let taxForSlab = 0.30 * slabIncome;
+        slabDetails.push({
+          range: 'Above ₹10,00,000',
+          income: slabIncome,
+          rate: '30%',
+          tax: taxForSlab
+        });
+        tax += taxForSlab;
+      }
+      return { baseTax: tax, slabDetails: slabDetails };
+    }
+
+    function calculateTaxLiability() {
+      const basicSalary = parseFloat(document.getElementById('basicSalary').value.replace(/,/g, '')) || 0;
+      const hra = parseFloat(document.getElementById('hra').value.replace(/,/g, '')) || 0;
+      const specialAllowance = parseFloat(document.getElementById('specialAllowance').value.replace(/,/g, '')) || 0;
+      const lta = parseFloat(document.getElementById('lta').value.replace(/,/g, '')) || 0;
+      const bonus = parseFloat(document.getElementById('bonus').value.replace(/,/g, '')) || 0;
+      const annualPF = parseFloat(document.getElementById('annualPF').value.replace(/,/g, '')) || 0;
+      const actualRent = parseFloat(document.getElementById('actualRent').value.replace(/,/g, '')) || 0;
+      const npsDonation = parseFloat(document.getElementById('npsContribution').value.replace(/,/g, '')) || 0;
+      
+      const cityType = document.querySelector('input[name="cityType"]:checked').value;
+      let hraPercent = (cityType === "metro") ? 0.5 : 0.4;
+      
+      const claimHRA = document.getElementById('claimHRA').checked;
+      const claim80C = document.getElementById('claim80C').checked;
+      const claim80D = document.getElementById('claim80D').checked;
+      const homeLoanInterest = Math.min(
+        parseFloat(document.getElementById('homeLoanInterest').value.replace(/,/g, '')) || 0,
+        200000
+      );
+      
+      const standardDeduction = 50000;
+      
+      const percentageBasic = hraPercent * basicSalary;
+      const annualRentPaid = actualRent * 12;
+      const rentMinus10 = annualRentPaid - (0.10 * basicSalary);
+      const adjustedRentMinus10 = Math.max(rentMinus10, 0);
+      const computedExemptHRA = Math.min(hra, percentageBasic, adjustedRentMinus10);
+      const taxableHRA = claimHRA ? (hra - computedExemptHRA) : hra;
+      
+      const grossIncome = basicSalary + specialAllowance + lta + taxableHRA + bonus;
+      const incomeAfterStandard = grossIncome - standardDeduction;
+      
+      const deduction80C = claim80C ? 150000 : 0;
+      const deduction80D = claim80D ? 25000 : 0;
+      const deductionNPS = Math.min(npsDonation, 50000);
+      
+      let taxableIncome = incomeAfterStandard - deduction80C - deduction80D - homeLoanInterest - deductionNPS;
+      taxableIncome = Math.max(taxableIncome, 0);
+      
+      const taxData = computeTax(taxableIncome);
+      const baseTax = taxData.baseTax;
+      const cess = 0.04 * baseTax;
+      const totalTaxLiability = baseTax + cess;
+      
+      const monthlyPF = annualPF / 12;
+      const monthlyGross = (basicSalary + specialAllowance + lta + bonus + hra) / 12;
+      const monthlyTax = totalTaxLiability / 12;
+      const monthlyTakeHome = monthlyGross - monthlyTax - monthlyPF;
+      
+      const grossRows = [
+        ['Basic Salary', "₹" + formatNumber(basicSalary)],
+        ['Special/Other Allowances', "₹" + formatNumber(specialAllowance)],
+        ['LTA', "₹" + formatNumber(lta)],
+        ['Additional Bonus/Payout', "₹" + formatNumber(bonus)],
+        ['TOTAL GROSS INCOME (Taxable)', "₹" + formatNumber(grossIncome)]
+      ];
+      const tableGross = buildAsciiTable("Gross Income Calculation", grossRows);
+      
+      const hraRows = [
+        ['Actual HRA Received', "₹" + formatNumber(hra)],
+        [(cityType === "metro" ? "50% of Basic Salary" : "40% of Basic Salary"), "₹" + formatNumber(percentageBasic)],
+        ['Actual Rent Paid (Annual)', "₹" + formatNumber(annualRentPaid)],
+        ['Actual Rent - 10% of Basic', "₹" + formatNumber(adjustedRentMinus10)],
+        ['Exempt HRA', "₹" + formatNumber(computedExemptHRA)],
+        ['Taxable HRA', "₹" + formatNumber(taxableHRA)]
+      ];
+      const tableHRA = buildAsciiTable("HRA Calculation", hraRows);
+      
+      const tableDeduction = buildAsciiTable("Deductions & Taxable Income", [
+        ['Standard Deduction', "-₹" + formatNumber(standardDeduction)],
+        ['Section 80C Deduction', "-₹" + formatNumber(deduction80C)],
+        ['Section 80D Deduction', "-₹" + formatNumber(deduction80D)],
+        ['Home Loan Interest', "-₹" + formatNumber(homeLoanInterest)],
+        ['NPS Contribution (Sec 80CCD)', "-₹" + formatNumber(deductionNPS)],
+        ['Income after Deductions', "₹" + formatNumber(incomeAfterStandard - deduction80C - deduction80D - homeLoanInterest - deductionNPS)],
+        ['Taxable Income', "₹" + formatNumber(taxableIncome)]
+      ]);
+      
+      let slabRows = [];
+      taxData.slabDetails.forEach(function(slab) {
+        const valueStr = "Income: ₹" + formatNumber(slab.income) + ", Rate: " + slab.rate + ", Tax: ₹" + formatNumber(slab.tax);
+        slabRows.push([slab.range, valueStr]);
+      });
+      const tableSlab = buildAsciiTable("Slab-wise Tax Calculation", slabRows);
+      
+      const summaryRows = [
+        ['Base Tax', "₹" + formatNumber(baseTax)],
+        ['Health & Education Cess (4%)', "₹" + formatNumber(cess)],
+        ['TOTAL TAX LIABILITY', "₹" + formatNumber(totalTaxLiability)]
+      ];
+      const tableSummary = buildAsciiTable("Tax Summary", summaryRows);
+      
+      const monthlyBasic = basicSalary / 12;
+      const monthlySpecial = specialAllowance / 12;
+      const monthlyLTA = lta / 12;
+      const monthlyBonus = bonus / 12;
+      const monthlyHRA = hra / 12;
+      const calculatedMonthlyGross = monthlyBasic + monthlySpecial + monthlyLTA + monthlyBonus + monthlyHRA;
+      const breakdownRows = [
+        ['Basic Salary (Monthly)', "₹" + formatNumber(monthlyBasic)],
+        ['Special Allowance (Monthly)', "₹" + formatNumber(monthlySpecial)],
+        ['LTA (Monthly)', "₹" + formatNumber(monthlyLTA)],
+        ['Bonus (Monthly)', "₹" + formatNumber(monthlyBonus)],
+        ['HRA Received (Monthly)', "₹" + formatNumber(monthlyHRA)],
+        ['Total Gross Monthly', "₹" + formatNumber(calculatedMonthlyGross)],
+        ['Monthly Tax', "₹" + formatNumber(monthlyTax)],
+        ['Employee Provident Contribution (Monthly)', "₹" + formatNumber(monthlyPF)],
+        ['Net Monthly Take Home', "₹" + formatNumber(monthlyTakeHome)]
+      ];
+      const tableMonthly = buildAsciiTable("Monthly Take Home Breakdown", breakdownRows);
+      
+      return {
+        totalTaxLiability: totalTaxLiability,
+        monthlyTakeHome: monthlyTakeHome,
+        tableGross: tableGross,
+        tableHRA: tableHRA,
+        tableDeduction: tableDeduction,
+        tableSlab: tableSlab,
+        tableSummary: tableSummary,
+        tableMonthly: tableMonthly
+      };
+    }
+
+    document.getElementById('calculateBtn').addEventListener('click', function () {
+      const result = calculateTaxLiability();
+      document.getElementById('takeHomeSalary').textContent = "₹" + formatNumber(result.monthlyTakeHome);
+      document.getElementById('taxLiability').textContent = "₹" + formatNumber(result.totalTaxLiability);
+      document.getElementById('resultArea').style.display = "block";
+      document.getElementById('tableGross').textContent = result.tableGross;
+      document.getElementById('tableHRA').textContent = result.tableHRA;
+      document.getElementById('tableDeduction').textContent = result.tableDeduction;
+      document.getElementById('tableSlab').textContent = result.tableSlab;
+      document.getElementById('tableSummary').textContent = result.tableSummary;
+      document.getElementById('tableMonthly').textContent = result.tableMonthly;
+      document.getElementById('breakdownArea').style.display = "block";
+    });
+
+    document.querySelectorAll('.numeric-input').forEach(function (input) {
+      input.addEventListener('blur', function () {
+        let raw = input.value.replace(/,/g, '');
+        let num = parseFloat(raw);
+        if (!isNaN(num)) {
+          input.value = formatNumber(num);
+        }
+      });
+      input.addEventListener('focus', function () {
+        input.value = input.value.replace(/,/g, '');
+      });
+      input.addEventListener('keypress', function (e) {
+        const char = String.fromCharCode(e.which);
+        if (!/[0-9.]/.test(char)) {
+          e.preventDefault();
+        }
+      });
+    });
+
+    document.querySelectorAll('#taxForm input').forEach(function(input) {
+      input.addEventListener('input', function() {
+        document.getElementById('resultArea').style.display = "none";
+        document.getElementById('breakdownArea').style.display = "none";
+      });
+    });
+  </script>
+</body>
+</html>
